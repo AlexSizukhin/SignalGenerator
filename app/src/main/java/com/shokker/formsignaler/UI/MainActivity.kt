@@ -107,6 +107,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
             generatorViewModel.start()
         else
             generatorViewModel.stop()
+
     }
     fun onSettingsOkButton(v: View?)
     {

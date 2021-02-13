@@ -20,8 +20,10 @@ import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.platform.app.InstrumentationRegistry
 import com.google.common.collect.Multiset
+import com.shokker.formsignaler.DIModules.RealGeneratorModule
 import com.shokker.formsignaler.UI.MainActivity
 import com.shokker.formsignaler.model.MainContract
+import com.shokker.formsignaler.model.RealSignalGenerator
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -35,7 +37,7 @@ import javax.inject.Singleton
 import kotlin.random.Random
 
 
-@UninstallModules(SettingsModule::class)
+@UninstallModules(SettingsModule::class, RealGeneratorModule::class)
 @HiltAndroidTest
 //@RunWith(AndroidJUnit4::class)
 class UserCaseTest
@@ -48,6 +50,8 @@ class UserCaseTest
 
     @Inject
     lateinit var fakeSettings : MainContract.GenerationSetting
+    @Inject
+    lateinit var fakeGenerator: MainContract.GeneratorModel
 
     private fun getResourceString(id: Int): String? {
         val targetContext: Context = InstrumentationRegistry.getInstrumentation().targetContext
@@ -138,6 +142,9 @@ class UserCaseTest
     @Test
     fun checkChangingParamsOnRunning()
     {
+        hiltRule.inject()
+        val newFreq:Int = 123
+
         Espresso.onView(ViewMatchers.withId(R.id.playFloatButton)).perform(ViewActions.click())
 
 
@@ -146,11 +153,15 @@ class UserCaseTest
         val zz = ViewMatchers.withParent(ViewMatchers.withId(R.id.freq))
         Espresso.onView(allOf(xx, zz)).perform(ViewActions.click())
                 .perform(ViewActions.clearText())
-                .perform(ViewActions.typeText("123"))
+                .perform(ViewActions.typeText(newFreq.toString()))
                 .perform(ViewActions.pressImeActionButton())
                 .perform(ViewActions.closeSoftKeyboard())
 
         Thread.sleep(100)
-      //  TODO("Test new frequency value")
+
+        if(fakeGenerator.generatingFunction==null)
+            throw Exception("fakeGenerator.generatingFunction is NULL")
+        if(fakeGenerator.generatingFunction?.frequency!=newFreq.toDouble())
+            throw Exception("freq was ${fakeGenerator.generatingFunction?.frequency} but ${newFreq} excepted ")
     }
 }

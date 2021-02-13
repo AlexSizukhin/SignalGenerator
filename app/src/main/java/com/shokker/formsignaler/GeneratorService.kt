@@ -34,7 +34,7 @@ class GeneratorService: Service(), MainContract.GeneratorModel
 
 
     @Inject
-    lateinit var signalGenerator: RealSignalGenerator
+    lateinit var signalGenerator: MainContract.GeneratorModel // was before :RealSignalGenerator
 
     private companion object{var job : Job? = null
         val CHANNEL_ID = "generationService"

@@ -1,25 +1,36 @@
 package com.shokker.formsignaler.model
 
 
+import android.content.Context
 import android.media.AudioManager
 import android.media.AudioTrack
+import android.os.Looper
 import android.util.Log
+import android.widget.Toast
+import androidx.annotation.MainThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 open class RealSignalGenerator
     @Inject
-    constructor()
+    constructor(@ApplicationContext val appContext: Context,
+                var mSettings: MainContract.GenerationSetting)
     :MainContract.GeneratorModel {
 
     protected val TAG = "Real Signal Generator"
 
 
-    @Inject
-    lateinit var mSettings : MainContract.GenerationSetting
+//    @Inject
+//    lateinit var mSettings : MainContract.GenerationSetting
     override var generationSettings: MainContract.GenerationSetting
         get() =  mSettings
         set(value) { mSettings = value  }
@@ -59,13 +70,18 @@ open class RealSignalGenerator
             val frameRate = mSettings.frameRate
             audioTrack = prepare(bufferSize,frameRate)
             val signalBuffer = ShortArray(bufferSize)
+            isRunningB = true
             mIsRunning.postValue(MainContract.GenaratorStatus.IS_RUNNING)
             while (isRunningB)                                                          // todo Add watchdog here or in stervice
             {
                 fillBuffer(signalBuffer,mGeneratingFunction!!,frameRate)
                 audioTrack.write(signalBuffer,0,signalBuffer.size)
             }
-        }catch (e:Exception) { Log.e(TAG,e.toString())}
+        }catch (e:Exception)
+        {
+            Log.e(TAG,e.toString())
+            //CoroutineScope(Dispatchers.Main).run {                Toast.makeText(appContext , e.toString(),Toast.LENGTH_LONG).show()            } // not works. Looper etc. TODO delete or fix
+        }
         finally {
             try {
                 cleanUp(audioTrack)
@@ -81,7 +97,7 @@ open class RealSignalGenerator
 
     ////////////////////////////////////////////////////////////////////////////////////
     private var signalTick = Long.MIN_VALUE
-    private fun fillBuffer(myArray: ShortArray, function: MainContract.SignalFunction,samplerate : Int)
+    protected fun fillBuffer(myArray: ShortArray, function: MainContract.SignalFunction,samplerate : Int)
     {
         val stepSize = 2.0*Math.PI/(samplerate/function.frequency)
         val amp = (function.ampletude/100.0*(0xFF/2)).toInt()

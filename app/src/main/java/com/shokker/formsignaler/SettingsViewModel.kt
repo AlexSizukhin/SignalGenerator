@@ -11,13 +11,15 @@ import javax.inject.Singleton
 @Singleton
 class SettingsViewModel
 @Inject
-    constructor(val repository:GeneralRepository): ViewModel(), MainContract.GenerationSettingPresenter{
+    constructor(val repository:GeneralRepository,
+                val mModel: MainContract.GenerationSetting)
+    : ViewModel(), MainContract.GenerationSettingPresenter{
     init{
 
     }
 
-@Inject
-    lateinit var mModel: MainContract.GenerationSetting
+//@Inject
+//    lateinit var mModel: MainContract.GenerationSetting
 
     override fun loadSettings(): MainContract.GenerationSetting {
         //val s = repository.readAllSettings //.value
