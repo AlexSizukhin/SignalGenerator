@@ -1,40 +1,37 @@
 package com.shokker.formsignaler
 
 //import com.google.common.base.Predicates.instanceOf
+
 import android.content.Context
-import android.os.DropBoxManager
 import android.util.Log
 import android.view.KeyEvent
+import android.view.View
+import android.view.ViewGroup
 import android.widget.EditText
-import android.widget.SpinnerAdapter
-import androidx.test.InstrumentationRegistry.getTargetContext
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onData
 import androidx.test.espresso.Espresso.pressBack
 import androidx.test.espresso.NoActivityResumedException
-
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.assertion.ViewAssertions
-
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.platform.app.InstrumentationRegistry
-import com.google.common.collect.Multiset
 import com.shokker.formsignaler.DIModules.RealGeneratorModule
 import com.shokker.formsignaler.UI.MainActivity
+import com.shokker.formsignaler.UI.MyNumberController
 import com.shokker.formsignaler.model.MainContract
-import com.shokker.formsignaler.model.RealSignalGenerator
-import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
+
 import org.hamcrest.Matchers.*
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import javax.inject.Inject
-import javax.inject.Singleton
 import kotlin.random.Random
+import kotlin.random.nextUInt
 
 
 @UninstallModules(SettingsModule::class, RealGeneratorModule::class)
@@ -46,6 +43,11 @@ class UserCaseTest
     var hiltRule = HiltAndroidRule(this)
     @get: Rule
     val activityRule: ActivityScenarioRule<MainActivity> = ActivityScenarioRule(MainActivity::class.java)
+    @Before
+    fun prepare()
+    {
+        hiltRule.inject()
+    }
 
 
     @Inject
@@ -72,19 +74,19 @@ class UserCaseTest
     }
     @Test
     fun checkLoadToDialogSettings(){         // only start and stop app
-        hiltRule.inject()
         Espresso.onView(ViewMatchers.withId(R.id.settingsFloatButton)).perform(ViewActions.click())
         //Thread.sleep(3000)
-        Espresso.onView(ViewMatchers.withId(R.id.spinnerSampleRate)).check(ViewAssertions.matches( ViewMatchers.withSpinnerText(fakeSettings.frameRate.toString())))
-        Espresso.onView(ViewMatchers.withId(R.id.editTextBufferSize)).check(ViewAssertions.matches(ViewMatchers.withText( fakeSettings.bufferSize.toString())) )
-        Espresso.onView(ViewMatchers.withId(R.id.swStopOnUnplug)).check(ViewAssertions.matches(ViewMatchers.isDisplayed()) )
-        Espresso.onView(ViewMatchers.withId(R.id.swStartOnPlug)).check(ViewAssertions.matches(ViewMatchers.isDisplayed()) )
-        Espresso.onView(ViewMatchers.withId(R.id.swStopOnUnplug)).check(ViewAssertions.matches(ViewMatchers.isChecked () ))
-        Espresso.onView(ViewMatchers.withId(R.id.swStartOnPlug)).check(ViewAssertions.matches(ViewMatchers.isChecked()) )
+        Espresso.onView(ViewMatchers.withId(R.id.spinnerSampleRate)).check(ViewAssertions.matches(ViewMatchers.withSpinnerText(fakeSettings.frameRate.toString())))
+        Espresso.onView(ViewMatchers.withId(R.id.editTextBufferSize)).check(ViewAssertions.matches(ViewMatchers.withText(fakeSettings.bufferSize.toString())))
+        Espresso.onView(ViewMatchers.withId(R.id.swStopOnUnplug)).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        Espresso.onView(ViewMatchers.withId(R.id.swStartOnPlug)).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        Espresso.onView(ViewMatchers.withId(R.id.swStopOnUnplug)).check(ViewAssertions.matches(ViewMatchers.isChecked()))
+        Espresso.onView(ViewMatchers.withId(R.id.swStartOnPlug)).check(ViewAssertions.matches(ViewMatchers.isChecked()))
     }
     @Test
     fun checkSavedSettings()
     {
+
         val newBuffer = Random.nextInt().rem(50000)
         Log.d("test", "Buffer value ${newBuffer}")
 
@@ -124,7 +126,17 @@ class UserCaseTest
     {
         Espresso.onView(ViewMatchers.withId(R.id.functionList)).perform(ViewActions.click())
         onData(allOf(`is`(instanceOf(MainContract.SignalFunction::class.java)))).atPosition(3).perform(ViewActions.click())
-      //  TODO("Check proper function is selected")
+        if(fakeGenerator.generatingFunction?.functionName!=getResourceString(R.string.double_pwm_function_name))
+            throw Exception("Selected function is ${fakeGenerator.generatingFunction?.functionName} while must be ${getResourceString(R.string.double_pwm_function_name)}")
+
+    }
+    @Test
+    fun checkFunctionSetOnLoad()
+    {
+        Thread.sleep(500)
+        if(fakeGenerator.generatingFunction?.functionName!=getResourceString(R.string.sin_function_name))
+            throw Exception("Selected function is ${fakeGenerator.generatingFunction?.functionName} while must be ${getResourceString(R.string.sin_function_name)}")
+
     }
     @Test
     fun checkStartStopNoDelya()
@@ -137,15 +149,18 @@ class UserCaseTest
     {
         Espresso.onView(ViewMatchers.withId(R.id.playFloatButton)).perform(ViewActions.click())
         Thread.sleep(500)
+        if(fakeGenerator.isRunning.value!=MainContract.GenaratorStatus.IS_RUNNING)
+            throw Exception("Not running with ${fakeGenerator.isRunning.value}")
         Espresso.onView(ViewMatchers.withId(R.id.playFloatButton)).perform(ViewActions.click())
+        Thread.sleep(500)
+        if(fakeGenerator.isRunning.value!=MainContract.GenaratorStatus.STOPPED)
+            throw Exception("Not stopped with ${fakeGenerator.isRunning.value}")
     }
     @Test
-    fun checkChangingParamsOnRunning()
+    fun checkChangingFrequencyOnRunning()
     {
-        hiltRule.inject()
         val newFreq:Int = 123
-
-        Espresso.onView(ViewMatchers.withId(R.id.playFloatButton)).perform(ViewActions.click())
+          Espresso.onView(ViewMatchers.withId(R.id.playFloatButton)).perform(ViewActions.click())
 
 
         val xx = ViewMatchers.isAssignableFrom(EditText::class.java)
@@ -163,5 +178,40 @@ class UserCaseTest
             throw Exception("fakeGenerator.generatingFunction is NULL")
         if(fakeGenerator.generatingFunction?.frequency!=newFreq.toDouble())
             throw Exception("freq was ${fakeGenerator.generatingFunction?.frequency} but ${newFreq} excepted ")
+
     }
+
+    @Test
+    fun checkChangingParametersOnRunningPWM()
+    {
+        val newParam:Int = Random.nextUInt().rem(90u).toInt()
+
+        Espresso.onView(ViewMatchers.withId(R.id.functionList)).perform(ViewActions.click())
+        onData(allOf(`is`(instanceOf(MainContract.SignalFunction::class.java)))).atPosition(2).perform(ViewActions.click())
+
+        Espresso.onView(ViewMatchers.withId(R.id.playFloatButton)).perform(ViewActions.click())
+
+        val xx = ViewMatchers.isAssignableFrom(EditText::class.java)  // EditText
+//        val yy = ViewMatchers.withContentDescription("50.0")// isAssignableFrom(EditText::class.java)
+        val zz = ViewMatchers.withParent(ViewMatchers.withChild (ViewMatchers.withText(R.string.step_proc_param) ))
+
+        Espresso.onView(allOf(zz,xx)).perform(ViewActions.click())
+                .perform(ViewActions.clearText())
+                .perform(ViewActions.typeText(newParam.toString()))
+                .perform(ViewActions.pressImeActionButton())
+                .perform(ViewActions.closeSoftKeyboard())
+
+        Thread.sleep(100)
+
+        if(fakeGenerator.generatingFunction==null)
+            throw Exception("fakeGenerator.generatingFunction is NULL")
+        if(fakeGenerator.generatingFunction!!.parameters[0]==null)
+            throw Exception("parametest doesnt present")
+        if(fakeGenerator.generatingFunction!!.parameters[0].currentValue!=newParam.toDouble())
+            throw Exception("Param was ${fakeGenerator.generatingFunction!!.parameters[0].currentValue} but ${newParam} excepted ")
+
+    }
+
+
+
 }

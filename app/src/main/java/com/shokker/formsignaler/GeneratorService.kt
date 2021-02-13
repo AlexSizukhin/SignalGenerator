@@ -88,6 +88,7 @@ class GeneratorService: Service(), MainContract.GeneratorModel
             .build()
 
         startForeground(1, notification)
+
         return START_NOT_STICKY
     }
 
@@ -96,6 +97,8 @@ class GeneratorService: Service(), MainContract.GeneratorModel
         super.onTaskRemoved(rootIntent)
         stop()
         stopSelf()
+        // todo notification cancel
+        Log.d(TAG, "On Task Removed")
     }
 
     inner class SignalGeneratorBinder : Binder() {

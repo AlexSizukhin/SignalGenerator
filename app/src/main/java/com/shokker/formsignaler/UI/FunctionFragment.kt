@@ -1,6 +1,7 @@
 package com.shokker.formsignaler.UI
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -21,6 +22,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class FunctionFragment : Fragment(), MainContract.SignalFunctionView, MyNumberController.ChangeListener {
 
+    private val TAG = "FunctionFragment"
     @Inject
     lateinit var mFunctionPresenter: MainContract.SignalFunctionPresenter
 
@@ -84,13 +86,13 @@ class FunctionFragment : Fragment(), MainContract.SignalFunctionView, MyNumberCo
                 override fun OnChange(t: MyNumberController, value: Double) {
                     it.currentValue = value
                     functionView.invalidate()
-//                    Log.d("Tag","On Change")
+                    Log.v(TAG,"Item ${it.parameterName} changed to ${value} from ${t}")
                 }
-
 
             })
 
             mParametersLayout.addView(control)
+            Log.d(TAG,"Item ${it.parameterName} added")
         }
     }
 

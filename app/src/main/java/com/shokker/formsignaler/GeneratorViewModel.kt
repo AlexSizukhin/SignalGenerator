@@ -26,7 +26,7 @@ class GeneratorViewModel
     @Inject constructor(@ApplicationContext val appContext: Context)
     :        ViewModel() {
     private val TAG = "Generator ViewModel"
-    init { Log.d(TAG,"ViewModel for Generator created ctor/init") }
+    init { Log.d(TAG,"ViewModel for Generator created ctor/init")  }
 
     protected val serviceClass: Class<GeneratorService> = GeneratorService::class.java
 
@@ -42,7 +42,13 @@ class GeneratorViewModel
 
     var generationFunction:MainContract.SignalFunction?                  // todo convert to LiveData
         get () =  mGeneratorServiceBinder.value?.getService()?.generatingFunction
-        set(value) { mGeneratorServiceBinder.value?.getService()?.generatingFunction = value}
+        set(value) {
+            if(mGeneratorServiceBinder.value==null)
+                Log.d(TAG,"mGeneratorServiceBinder.value==null")
+            if(mGeneratorServiceBinder.value?.getService()==null)
+                Log.d(TAG,"mGeneratorServiceBinder.value?.getService()==null")
+            mGeneratorServiceBinder.value?.getService()?.generatingFunction = value
+        }
 
     var genetationSettings:MainContract.GenerationSetting               // todo convert to LiveData
         get() = service.generationSettings

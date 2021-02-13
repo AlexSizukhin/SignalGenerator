@@ -67,14 +67,21 @@ class FakeRealGeneratorModule{
                 isRunningB = true
                 mIsRunning.postValue(MainContract.GenaratorStatus.IS_RUNNING)
                 val delayPeriod:Long = (bufferSize.toDouble()/frameRate.toDouble()*1000.0).toLong()
+                Log.d("test","delay period is ${delayPeriod}")
                 while (isRunningB)                                                          // todo Add watchdog here or in stervice
                 {
                     delay( delayPeriod )
                     fillBuffer(signalBuffer, mGeneratingFunction!!, frameRate)
                 }
+                mIsRunning.postValue(MainContract.GenaratorStatus.STOPPED)
             } finally {
                     cleanUp(null)
             }
+        }
+
+        override fun stop() {
+            Log.d("Fake","stopping")
+            isRunningB = false
         }
     }
 }
