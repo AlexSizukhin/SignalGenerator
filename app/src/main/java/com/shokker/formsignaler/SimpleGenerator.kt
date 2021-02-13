@@ -40,7 +40,7 @@ abstract class SimpleGenerator: MainContract.GeneratorModel, Service() {
     abstract suspend fun startAsync()
     ////////////////////////////////////////////////////////////////////////////////////
     protected var isRunningB = false
-    override fun start() {
+    override suspend fun start() {
         if(job==null || job?.isActive!=true) {
             buffersize = mSettings.bufferSize
             samplerate = mSettings.frameRate

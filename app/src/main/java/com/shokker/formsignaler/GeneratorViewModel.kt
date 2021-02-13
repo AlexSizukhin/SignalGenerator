@@ -13,8 +13,13 @@ import androidx.lifecycle.ViewModel
 import com.shokker.formsignaler.model.MainContract
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.coroutineContext
 
 @Singleton
 class GeneratorViewModel
@@ -48,7 +53,7 @@ class GeneratorViewModel
 
     fun start()
     {
-        service.start()
+        runBlocking { service.start() }
     }
     fun stop()
     {

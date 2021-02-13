@@ -17,6 +17,7 @@ import com.shokker.formsignaler.model.RealSignalGenerator
 
 
 import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.scopes.ServiceScoped
 import kotlinx.coroutines.*
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -105,8 +106,8 @@ class GeneratorService: Service(), MainContract.GeneratorModel
     }
     ////////////////////////////////////////////////////////////////////////////////////
     override suspend fun start() {                      // todo change coroutine scope to IO
-        if(job ==null || job?.isActive!=true) {
-           job = GlobalScope.launch { signalGenerator.start() }
+        if(job ==null || job?.isActive!=true) {         //// todo Add watchdog here or in realGenerator
+           job = CoroutineScope(Dispatchers.IO).launch { signalGenerator.start() }
         }
         else {
             Log.d(TAG, "Job is ${job.toString()}")
