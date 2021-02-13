@@ -1,0 +1,57 @@
+<resources>
+    <string name="app_name">FormSignaler</string>
+    <string name="title_activity_settings">SettingsActivity</string>
+
+
+    <string name="settings">Settings</string>
+
+    <!-- Sync Preferences -->
+    <string name="title_activity_main">Wave Signal generator</string>
+    <string name="to_return">click to return</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="ampletude_t">Ampletude (%)</string>
+    <string name="frequency_t">Frequency (Hz)</string>
+    <string name="function_t">Signal function name</string>
+    <string name="settings_changed">Settings changed</string>
+    <string name="settings_not_changed">Settings not changed</string>
+    <string name="functionName_sinus">Sinus</string>
+    <string name="start_on_headphones_plug">Start on headphones plug</string>
+    <string name="stop_on_headphones_unplug">Stop on headphones unplug</string>
+    <string name="stop_on_app_close">Stop on app close</string>
+    <string name="buffer_size_caption">Buffer size</string>
+    <string name="sample_rate_caption">SampleRate</string>
+
+    <string name="pwm_function_name">PWM (Pulse-width modulation)</string>
+    <string name="sin_function_name">Sinus</string>
+    <string name="noise_function_name">Noise</string>
+    <string name="double_pwm_function_name">Double side PWM</string>
+    <string name="saw_function_name">Sawtooth wave</string>
+
+    <string name="step_proc_param">Step (%)</string>
+    <string name="ang_param">Angle (?)</string>
+    <string name="step_up_param">Up Step (%)</string>
+    <string name="step_down_param">Up Step (%)</string>
+
+
+    <string-array name="functionNames">
+        <item>Sin</item>
+        <item>Pwm</item>
+        <item>Noise</item>
+    </string-array>
+
+    <string-array name="frameRates">
+        <item>8000</item>
+        <item>11025</item>
+        <item>16000</item>
+        <item>22050</item>
+        <item>32000</item>
+        <item>37800</item>
+        <item>44100</item>
+        <item>47250</item>
+        <item>48000</item>
+        <item>64000</item>
+    </string-array>
+
+</resources>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.shokker.formsignaler">
+
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <application
+        android:name=".SignalerApp"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/title_activity_main"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar">
+        <activity
+            android:name=".UI.MainActivity"
+            android:configChanges="keyboardHidden"
+            android:label="@string/title_activity_main"
+            android:theme="@style/Theme.FormSignaler.Fullscreen">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <service android:name=".GeneratorService" />
+
+        <receiver android:name=".PlugBroadcastReciever" >
+            <intent-filter>
+                <action android:name="android.intent.action.HEADSET_PLUG" />
+                <action android:name="android.intent.action.AIRPLANE_MODE" />
+            </intent-filter>
+        </receiver>
+
+    </application>
+
+</manifest>

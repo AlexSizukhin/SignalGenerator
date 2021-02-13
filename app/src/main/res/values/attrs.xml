@@ -1,0 +1,20 @@
+<resources>
+    <declare-styleable name="FullscreenAttrs">
+        <attr name="fullscreenBackgroundColor" format="color" />
+        <attr name="fullscreenTextColor" format="color" />
+    </declare-styleable>
+    <declare-styleable name="FunctionView">
+        <attr name="lineColor" format="color" />
+        <attr name="lineThikness" format="float"  />
+        <attr name="stepCount" format="integer"  />
+    </declare-styleable>
+    <declare-styleable name="MyNumberController">
+        <attr name="minValue" format="float" />
+        <attr name="maxValue" format="float"  />
+        <attr name="currentValue" format="float"  />
+        <attr name="updateOnSeek" format="boolean"  />
+        <attr name="description" format="string" />
+        <!-- <attr name="onValueChange" format="string" /> -->
+    </declare-styleable>
+
+</resources>

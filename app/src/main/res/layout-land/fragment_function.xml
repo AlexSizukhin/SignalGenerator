@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@+id/secondView">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <!--             <TextView
+                                android:id="@+id/textFunctionName"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Function Name" /> -->
+                <com.shokker.formsignaler.UI.MyNumberController
+                    android:id="@+id/ampletude"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:minValue="0"
+                    app:maxValue="100"
+                    app:updateOnSeek="true"
+                    app:description="@string/ampletude_t"/>
+
+            <com.shokker.formsignaler.UI.MyNumberController
+                android:id="@+id/freq"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:minValue="1"
+                app:maxValue="22000"
+                app:updateOnSeek="true"
+                app:description="@string/frequency_t" />
+
+                <LinearLayout
+                    android:id="@+id/parametersLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <com.shokker.formsignaler.UI.MyNumberController
+                        android:id="@+id/param1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:description="2312" />
+
+                    <com.shokker.formsignaler.UI.MyNumberController
+                        android:id="@+id/param6"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:description="2312" />
+
+                    <com.shokker.formsignaler.UI.MyNumberController
+                        android:id="@+id/param7"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:description="2312" />
+
+                    <com.shokker.formsignaler.UI.MyNumberController
+                        android:id="@+id/param8"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:description="2312" />
+
+                    <com.shokker.formsignaler.UI.MyNumberController
+                        android:id="@+id/param9"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:description="2312" />
+                </LinearLayout>
+
+            </LinearLayout>
+        </ScrollView>
+
+        <View
+            android:id="@+id/secondView"
+            android:layout_width="2dp"
+            android:layout_height="match_parent"
+            android:layout_centerHorizontal="true"
+
+            />
+
+        <com.shokker.formsignaler.UI.FunctionView
+            android:id="@+id/functionView"
+            android:layout_toRightOf="@+id/secondView"
+            app:lineColor="@color/colorAccent"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </RelativeLayout>
+
+</androidx.appcompat.widget.LinearLayoutCompat>
