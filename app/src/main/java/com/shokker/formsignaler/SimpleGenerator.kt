@@ -10,7 +10,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-
+/*
 abstract class SimpleGenerator: MainContract.GeneratorModel, Service() {
 
     protected val TAG = "GeneratorService"
@@ -87,3 +87,4 @@ abstract class SimpleGenerator: MainContract.GeneratorModel, Service() {
     ////////////////////////////////////////////////////////////////////////////////////////////
 }
 
+*/

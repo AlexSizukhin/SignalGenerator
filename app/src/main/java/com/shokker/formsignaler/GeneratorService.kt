@@ -49,7 +49,7 @@ class GeneratorService: Service(), MainContract.GeneratorModel
         val chan = NotificationChannel(channelId,
                 channelName, NotificationManager.IMPORTANCE_NONE)
         chan.lightColor = Color.BLUE
-        chan.lockscreenVisibility = Notification.VISIBILITY_PRIVATE
+        chan.lockscreenVisibility = Notification.VISIBILITY_PUBLIC
         val service = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         service.createNotificationChannel(chan)
         return channelId
@@ -61,7 +61,7 @@ class GeneratorService: Service(), MainContract.GeneratorModel
         super.onCreate()
     }
 
-    override fun onBind(intent: Intent?): IBinder? {
+    override fun onBind(intent: Intent?): IBinder {
         Log.d(TAG, "onBind")
         return mBinder
     }
@@ -82,7 +82,7 @@ class GeneratorService: Service(), MainContract.GeneratorModel
         val notification = NotificationCompat.Builder(this,
                 channel)
             .setContentTitle(getString(R.string.title_activity_main))
-            .setContentText(getString(R.string.to_return))          // todo resources
+            .setContentText(getString(R.string.to_return))
             .setSmallIcon(R.drawable.icon)// ic_baseline_waves_24)
             .setContentIntent(pendIntent)
             .build()
@@ -96,9 +96,9 @@ class GeneratorService: Service(), MainContract.GeneratorModel
     override fun onTaskRemoved(rootIntent: Intent?) {
         super.onTaskRemoved(rootIntent)
         stop()
+        stopForeground(true)
         stopSelf()
-        // todo notification cancel
-        Log.d(TAG, "On Task Removed")
+        Log.d(TAG, "On Task Removed finished")
     }
 
     inner class SignalGeneratorBinder : Binder() {
@@ -118,7 +118,7 @@ class GeneratorService: Service(), MainContract.GeneratorModel
         }
     }
 
-    override fun stop() {
+    override fun stop() {                                   // todo : waiting for real stop!
             signalGenerator.stop()
             Log.d(TAG, "About to stop ")
     }

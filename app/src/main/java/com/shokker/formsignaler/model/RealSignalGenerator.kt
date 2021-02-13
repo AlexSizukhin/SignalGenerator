@@ -2,22 +2,18 @@ package com.shokker.formsignaler.model
 
 
 import android.content.Context
+import android.media.AudioAttributes
+import android.media.AudioFormat
 import android.media.AudioManager
 import android.media.AudioTrack
-import android.os.Looper
 import android.util.Log
-import android.widget.Toast
-import androidx.annotation.MainThread
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import dagger.hilt.EntryPoint
-import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.components.SingletonComponent
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import javax.inject.Inject
 import javax.inject.Singleton
+
 
 @Singleton
 open class RealSignalGenerator
@@ -46,20 +42,32 @@ open class RealSignalGenerator
         get() = mIsRunning
 
     ////////////////////////////////////////////////////////////////////////////////////
-    protected fun prepare(bufferSize:Int, samplerate:Int):AudioTrack
+    protected fun prepare(bufferSize: Int, samplerate: Int):AudioTrack
     {
-        val audioTrack = AudioTrack(AudioManager.STREAM_MUSIC, samplerate, android.media.AudioFormat.CHANNEL_OUT_MONO,
-                android.media.AudioFormat.ENCODING_PCM_16BIT, bufferSize*2,
-                AudioTrack.MODE_STREAM)
+        val audioManager = appContext.getSystemService(Context.AUDIO_SERVICE) as  AudioManager
+
+        val audioTrack = AudioTrack(AudioAttributes.Builder()
+                .setContentType(AudioAttributes.CONTENT_TYPE_UNKNOWN)
+                .setUsage(AudioAttributes.USAGE_MEDIA)
+                .build(),
+                AudioFormat.Builder()
+                        .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
+                        .setSampleRate(samplerate)
+                        .setChannelMask(AudioFormat.CHANNEL_OUT_MONO)
+                        .build(),
+                bufferSize * 2,
+                AudioTrack.MODE_STREAM,
+                audioManager.generateAudioSessionId())
+
         audioTrack.setVolume(AudioTrack.getMaxVolume())
         audioTrack.play()
         return  audioTrack
     }
     protected fun cleanUp(audioTrack: AudioTrack?)
     {
-        audioTrack?.flush();
-        audioTrack?.stop();
-        audioTrack?.release();
+        audioTrack?.flush()
+        audioTrack?.stop()
+        audioTrack?.release()
     }
     ////////////////////////////////////////////////////////////////////////////////////
     private var isRunningB = false
@@ -68,25 +76,25 @@ open class RealSignalGenerator
         try{
             val bufferSize = mSettings.bufferSize
             val frameRate = mSettings.frameRate
-            audioTrack = prepare(bufferSize,frameRate)
+            audioTrack = prepare(bufferSize, frameRate)
             val signalBuffer = ShortArray(bufferSize)
             isRunningB = true
             mIsRunning.postValue(MainContract.GenaratorStatus.IS_RUNNING)
             while (isRunningB)                                                          // todo Add watchdog here or in stervice
             {
-                fillBuffer(signalBuffer,mGeneratingFunction!!,frameRate)
-                audioTrack.write(signalBuffer,0,signalBuffer.size)
+                fillBuffer(signalBuffer, mGeneratingFunction!!, frameRate)
+                audioTrack.write(signalBuffer, 0, signalBuffer.size)
             }
-        }catch (e:Exception)
+        }catch (e: Exception)
         {
-            Log.e(TAG,e.toString())
+            Log.e(TAG, e.toString())
             //CoroutineScope(Dispatchers.Main).run {                Toast.makeText(appContext , e.toString(),Toast.LENGTH_LONG).show()            } // not works. Looper etc. TODO delete or fix
         }
         finally {
             try {
                 cleanUp(audioTrack)
                 mIsRunning.postValue(MainContract.GenaratorStatus.STOPPED)
-            }catch (e:Exception) { Log.e(TAG,e.toString()); mIsRunning.postValue(MainContract.GenaratorStatus.UNKNOWN) }
+            }catch (e: Exception) { Log.e(TAG, e.toString()); mIsRunning.postValue(MainContract.GenaratorStatus.UNKNOWN) }
 
         }
     }
@@ -97,13 +105,13 @@ open class RealSignalGenerator
 
     ////////////////////////////////////////////////////////////////////////////////////
     private var signalTick = Long.MIN_VALUE
-    protected fun fillBuffer(myArray: ShortArray, function: MainContract.SignalFunction,samplerate : Int)
+    protected fun fillBuffer(myArray: ShortArray, function: MainContract.SignalFunction, samplerate: Int)
     {
         val stepSize = 2.0*Math.PI/(samplerate/function.frequency)
         val amp = (function.ampletude/100.0*(0xFF/2)).toInt()
         for(i in 0 until myArray.size)
         {
-            var vv:Double = function.functionBody(signalTick.rem(samplerate.toLong()).toDouble() * stepSize);
+            var vv:Double = function.functionBody(signalTick.rem(samplerate.toLong()).toDouble() * stepSize)
             if (vv>1) vv = 1.0
             if (vv<-1) vv = -1.0
 
@@ -115,14 +123,14 @@ open class RealSignalGenerator
     /////////////////////////////////////////////////////////////////////////////////////////////
     private fun swapBytes(s: Short):Short
     {
-        var x1 = s.toInt() and (0x00FF) shl 8
-        var x2 = s.toInt() and (0xFF00) shr 8
+        val x1 = s.toInt() and (0x00FF) shl 8
+        val x2 = s.toInt() and (0xFF00) shr 8
         return (x1+x2).toShort()
     }
     private fun swapBytes(s: Int):Short
     {
-        var x1 = s and (0x00FF) shl 8
-        var x2 = s and (0xFF00) shr 8
+        val x1 = s and (0x00FF) shl 8
+        val x2 = s and (0xFF00) shr 8
         return (x1+x2).toShort()
     }
     ////////////////////////////////////////////////////////////////////////////////////////////
