@@ -17,8 +17,8 @@
     <string name="settings_changed">Настройки поменялись</string>
     <string name="settings_not_changed">Настройки не изменились</string>
     <string name="functionName_sinus">Синус</string>
-    <string name="start_on_headphones_plug">Запустить при подключении разъема</string>
-    <string name="stop_on_headphones_unplug">Остановить при отключении разъема</string>
+    <string name="start_on_headphones_plug">Запустить при подключении разъема наушников</string>
+    <string name="stop_on_headphones_unplug">Остановить при отключении разъема наушников</string>
     <string name="stop_on_app_close">Остановить при закрытии</string>
     <string name="buffer_size_caption">Размер буфера</string>
     <string name="sample_rate_caption">Частота дискретизации</string>

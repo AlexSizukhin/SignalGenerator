@@ -109,7 +109,7 @@ class FunctionFactory
         val stepD =  FunctionParameterImpl(context.getString(R.string.four_channel_param5),0.0,18.0,10.0)
         val zeroLevel =  FunctionParameterImpl(context.getString(R.string.four_channel_param6),-100.0,100.0,0.0)
         init {
-            functionName ="Four channel with negative"// context.getString()
+            functionName =context.getString(R.string.four_channel_function_name )
             parameters.add(zeroLevel)
             parameters.add(stepZero)
             parameters.add(stepA)
@@ -121,25 +121,19 @@ class FunctionFactory
             val t =x.rem(2.0 * PI)/(2.0*PI)*100.0
             if(t< stepZero.currentValue )
                 return -1.0
-
             if(t.rem(20.0)<stepA.currentValue && (t.toInt()/20)==1)
                 return 1.0
 
-
             if(t.rem(20.0)<stepB.currentValue && (t.toInt()/20)==2)
-                return 1.0
-
+               return 1.0
 
             if(t.rem(20.0)<stepC.currentValue && (t.toInt()/20)==3)
                 return 1.0
 
-
             if(t.rem(20.0)<stepD.currentValue && (t.toInt()/20)==4)
                 return 1.0
 
-
             return zeroLevel.currentValue/100.0
-            // todo throw!
         }
     }
 }

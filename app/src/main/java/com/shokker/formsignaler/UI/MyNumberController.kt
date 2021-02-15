@@ -3,24 +3,29 @@ package com.shokker.formsignaler.UI
 import android.content.Context
 import android.text.InputType
 import android.util.AttributeSet
+import android.util.Log
+import android.view.KeyEvent
+import android.view.View
+import android.view.View.OnKeyListener
 import android.widget.*
 import com.shokker.formsignaler.R
 import java.util.*
 import kotlin.math.absoluteValue
 
+
 class MyNumberController : LinearLayout,  EventListener {
 
     constructor(context: Context?):super(context)
     {
-        init(null,null)
+        init(null, null)
     }
     constructor(context: Context?, attrs: AttributeSet?):super(context, attrs)
     {
-        init(attrs,null)
+        init(attrs, null)
     }
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int):super(context, attrs, defStyleAttr)
     {
-        init(attrs,defStyleAttr)
+        init(attrs, defStyleAttr)
     }
 
     lateinit var editText:EditText
@@ -43,35 +48,35 @@ class MyNumberController : LinearLayout,  EventListener {
         if(value>maxValue) pCurrentValue=maxValue
         if(value<minValue) pCurrentValue=minValue
 
-        mChangedFunction?.OnChange (this,value)
+        mChangedFunction?.OnChange(this, value)
     }
 
     var minValue: Double = Double.MIN_VALUE
     var maxValue: Double = Double.MAX_VALUE
 
     override fun invalidate() {
-        editText.setText(currentValue.toString())
+        editText.setText(formatNumberToText(currentValue))
         textView?.setText(description)
         super.invalidate()
     }
 
-    private fun init(set:AttributeSet?,defStyleAttr:Int?) {
+    private fun init(set: AttributeSet?, defStyleAttr: Int?) {
         parseXMLParameters(set)
         orientation = VERTICAL
 
         if(defStyleAttr==null)
-            editText = EditText(context,null)
+            editText = EditText(context, null)
         else
-            editText = EditText(context,null,defStyleAttr)
+            editText = EditText(context, null, defStyleAttr)
 
         editText.inputType = InputType.TYPE_CLASS_NUMBER
 
-        editText.setText(currentValue.toString())
+        editText.setText(formatNumberToText(currentValue))
 
         if(defStyleAttr==null)
-            seekBar = SeekBar(context,null)
+            seekBar = SeekBar(context, null)
         else
-            seekBar = SeekBar(context,null,defStyleAttr)
+            seekBar = SeekBar(context, null, defStyleAttr)
 
         seekBar.max = 100
         seekBar.progress = 50
@@ -79,7 +84,7 @@ class MyNumberController : LinearLayout,  EventListener {
         if(defStyleAttr==null)
             textView = TextView(context)
         else
-            textView = TextView(context,null,defStyleAttr)
+            textView = TextView(context, null, defStyleAttr)
 
         textView?.text = description
 
@@ -88,7 +93,7 @@ class MyNumberController : LinearLayout,  EventListener {
         addView(seekBar)
 
 
-        seekBar.setOnSeekBarChangeListener(MySeekChange(this.context,editText,this))
+        seekBar.setOnSeekBarChangeListener(MySeekChange(this.context, editText, this))
       // editText.addTextChangedListener(MyTextWatcher(this.context,this))
 
         editText.setOnFocusChangeListener { view, b ->
@@ -96,6 +101,20 @@ class MyNumberController : LinearLayout,  EventListener {
                 (view.parent as MyNumberController).currentValue = (view as TextView).text.toString().toDouble()
 //            Log.d("a","focusChange ${b.toString()} ${(view.parent as View).id}")
         }
+
+
+        val listener = object: OnKeyListener{
+            override fun onKey(view: View, keyCode: Int, p2: KeyEvent?): Boolean {
+                Log.d("KEY", "On key ${keyCode}")
+                if(keyCode == KeyEvent.KEYCODE_ENTER) {
+                    (view.parent as MyNumberController).currentValue = (view as TextView).text.toString().toDouble()
+                    return true
+                }
+                return false
+            }
+        }
+
+        editText.setOnKeyListener(listener)
 
 
     }
@@ -112,8 +131,10 @@ class MyNumberController : LinearLayout,  EventListener {
 
     fun formatNumberToText(value: Double):String
     {
+        if(value.absoluteValue<0.3)
+            return (Math.round(value * 1000.0)/1000.0).toString()
         if(value.absoluteValue<10.0)
-            return value.toString()
+            return (Math.round(value * 10.0)/10.0).toString()
         return Math.ceil(value).toString()
     }
 
@@ -129,7 +150,7 @@ class MyNumberController : LinearLayout,  EventListener {
                 maxValue = getFloat(R.styleable.MyNumberController_maxValue, Float.MAX_VALUE).toDouble()
                 val tCurVal = minValue+maxValue /2.0
                 currentValue = getFloat(R.styleable.MyNumberController_currentValue, tCurVal.toFloat()).toDouble()
-                updateOnSeek = getBoolean(R.styleable.MyNumberController_updateOnSeek,false )
+                updateOnSeek = getBoolean(R.styleable.MyNumberController_updateOnSeek, false)
                 description = getString(R.styleable.MyNumberController_description)?:""
             } finally {
                 recycle()
@@ -137,29 +158,29 @@ class MyNumberController : LinearLayout,  EventListener {
         }
     }
 
-    class MySeekChange(c1: Context?,t1: EditText,m : MyNumberController) : SeekBar.OnSeekBarChangeListener
+    class MySeekChange(c1: Context?, t1: EditText, m: MyNumberController) : SeekBar.OnSeekBarChangeListener
     {
         val mCtrl : MyNumberController = m
         val c: Context? = c1
         val tE: EditText = t1
         var bVal: Double =0.0
 
-        fun oldChangeValueByFormula(baseValeu:Double,progressVal: Int):Double
-        {       // TODO make smart!
+        fun oldChangeValueByFormula(baseValeu: Double, progressVal: Int):Double
+        {       // not in use (maybe use in future for input variants
             var k:Double
             k = progressVal/50.0
             return   (baseValeu*k)
         }
-        fun ChangeValueByFormula(baseValeu:Double,progressVal: Int):Double
+        fun ChangeValueByFormula(baseValeu: Double, progressVal: Int):Double
         {
-            var normalizedBias = (progressVal-50.0)/50.0
+            val normalizedBias = (progressVal-50.0)/50.0
             val positiveDest = mCtrl.maxValue - baseValeu
             val negativeDest = mCtrl.minValue - baseValeu
             // linear
             if(normalizedBias>0)
-                return baseValeu + positiveDest*Math.pow(normalizedBias,3.0)
+                return baseValeu + positiveDest*Math.pow(normalizedBias, 3.0)
             else
-                return baseValeu - negativeDest*Math.pow(normalizedBias,3.0)
+                return baseValeu - negativeDest*Math.pow(normalizedBias, 3.0)
         }
         //
         override fun onProgressChanged(p0: SeekBar?, p1: Int, p2: Boolean) {
@@ -179,7 +200,7 @@ class MyNumberController : LinearLayout,  EventListener {
         }
 
         override fun onStopTrackingTouch(p0: SeekBar) {
-            mCtrl.currentValue = ChangeValueByFormula(bVal,p0.progress)
+            mCtrl.currentValue = ChangeValueByFormula(bVal, p0.progress)
             mCtrl.isSeekPressed = false
             tE.setText(mCtrl.formatNumberToText(mCtrl.currentValue))
             p0.progress = 50
@@ -189,7 +210,7 @@ class MyNumberController : LinearLayout,  EventListener {
 
     interface  ChangeListener
     {
-        fun OnChange(t: MyNumberController, value:Double)
+        fun OnChange(t: MyNumberController, value: Double)
         {
         }
     }
