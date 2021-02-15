@@ -5,8 +5,6 @@ package com.shokker.formsignaler
 import android.content.Context
 import android.util.Log
 import android.view.KeyEvent
-import android.view.View
-import android.view.ViewGroup
 import android.widget.EditText
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onData
@@ -19,12 +17,10 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.platform.app.InstrumentationRegistry
 import com.shokker.formsignaler.DIModules.RealGeneratorModule
 import com.shokker.formsignaler.UI.MainActivity
-import com.shokker.formsignaler.UI.MyNumberController
 import com.shokker.formsignaler.model.MainContract
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
-
 import org.hamcrest.Matchers.*
 import org.junit.Before
 import org.junit.Rule
@@ -43,10 +39,15 @@ class UserCaseTest
     var hiltRule = HiltAndroidRule(this)
     @get: Rule
     val activityRule: ActivityScenarioRule<MainActivity> = ActivityScenarioRule(MainActivity::class.java)
+
+
+
     @Before
     fun prepare()
     {
         hiltRule.inject()
+        Log.d("Test", "On @Before injected ${fakeSettings}")
+        Log.d("Test", "On @Before injected ${fakeGenerator}")
     }
 
 
@@ -55,7 +56,7 @@ class UserCaseTest
     @Inject
     lateinit var fakeGenerator: MainContract.GeneratorModel
 
-    private fun getResourceString(id: Int): String? {
+    private fun getResourceString(id: Int): String {
         val targetContext: Context = InstrumentationRegistry.getInstrumentation().targetContext
         return targetContext.getResources().getString(id)
     }
@@ -193,9 +194,9 @@ class UserCaseTest
 
         val xx = ViewMatchers.isAssignableFrom(EditText::class.java)  // EditText
 //        val yy = ViewMatchers.withContentDescription("50.0")// isAssignableFrom(EditText::class.java)
-        val zz = ViewMatchers.withParent(ViewMatchers.withChild (ViewMatchers.withText(R.string.step_proc_param) ))
+        val zz = ViewMatchers.withParent(ViewMatchers.withChild(ViewMatchers.withText(R.string.step_proc_param)))
 
-        Espresso.onView(allOf(zz,xx)).perform(ViewActions.click())
+        Espresso.onView(allOf(zz, xx)).perform(ViewActions.click())
                 .perform(ViewActions.clearText())
                 .perform(ViewActions.typeText(newParam.toString()))
                 .perform(ViewActions.pressImeActionButton())
@@ -205,8 +206,8 @@ class UserCaseTest
 
         if(fakeGenerator.generatingFunction==null)
             throw Exception("fakeGenerator.generatingFunction is NULL")
-        if(fakeGenerator.generatingFunction!!.parameters[0]==null)
-            throw Exception("parametest doesnt present")
+        if(fakeGenerator.generatingFunction!!.parameters.count()==0)
+            throw Exception("parameters doesnt present")
         if(fakeGenerator.generatingFunction!!.parameters[0].currentValue!=newParam.toDouble())
             throw Exception("Param was ${fakeGenerator.generatingFunction!!.parameters[0].currentValue} but ${newParam} excepted ")
 

@@ -33,7 +33,7 @@ class FunctionFactory
 
 
     private  val functionArray:  Array<MainContract.SignalFunction> by lazy {
-        arrayOf(SinFunction(),NoiseFunction()/*,SAWFinction()*/,PWMFunction(),DoubleSidePWM())
+        arrayOf(SinFunction(),NoiseFunction(),PWMFunction(),DoubleSidePWM(),SAWFinction())
     }
 
     inner class SinFunction : MainContract.SignalFunction() {

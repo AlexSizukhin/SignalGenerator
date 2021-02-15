@@ -104,33 +104,27 @@ open class RealSignalGenerator
     }
 
     ////////////////////////////////////////////////////////////////////////////////////
-    private var signalTick = Long.MIN_VALUE
+    private var signalTick = 0//Long.MIN_VALUE
     protected fun fillBuffer(myArray: ShortArray, function: MainContract.SignalFunction, samplerate: Int)
     {
         val stepSize = 2.0*Math.PI/(samplerate/function.frequency)
-        val amp = (function.ampletude/100.0*(0xFF/2)).toInt()
+        val amp = (function.ampletude/100.0*(0xFFFF/2)).toInt()
         for(i in 0 until myArray.size)
         {
-            var vv:Double = function.functionBody(signalTick.rem(samplerate.toLong()).toDouble() * stepSize)
+            var vv:Double = function.functionBody(signalTick.rem( samplerate.toDouble()/function.frequency ) * stepSize)
             if (vv>1) vv = 1.0
             if (vv<-1) vv = -1.0
 
-            myArray[i] = swapBytes((((vv + 1.0) / 2.0) * amp).toInt())
+            myArray[i] = ((vv*amp).toInt().toShort())
 
             signalTick++
         }
     }
     /////////////////////////////////////////////////////////////////////////////////////////////
-    private fun swapBytes(s: Short):Short
+    private fun swapBytes(s: Short):Short           // really not need in android possible need on openAL (??)
     {
         val x1 = s.toInt() and (0x00FF) shl 8
         val x2 = s.toInt() and (0xFF00) shr 8
-        return (x1+x2).toShort()
-    }
-    private fun swapBytes(s: Int):Short
-    {
-        val x1 = s and (0x00FF) shl 8
-        val x2 = s and (0xFF00) shr 8
         return (x1+x2).toShort()
     }
     ////////////////////////////////////////////////////////////////////////////////////////////

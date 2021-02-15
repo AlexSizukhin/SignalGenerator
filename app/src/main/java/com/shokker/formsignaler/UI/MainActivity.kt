@@ -42,8 +42,9 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
-
         setContentView(R.layout.activity_main)
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+
 
         disableSounds(findViewById<ViewGroup>(R.id.mainLayout).rootView as ViewGroup)
 
@@ -58,7 +59,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         supportActionBar!!.setDisplayHomeAsUpEnabled(false)
         supportActionBar!!.hide()
 
@@ -151,7 +152,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     {
         for(i in 0..v.childCount-1)
         {
-            var nv = v.getChildAt(i)
+            val nv = v.getChildAt(i)
             if(nv==null)
                 continue
             nv.isSoundEffectsEnabled = false
