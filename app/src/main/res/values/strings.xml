@@ -34,6 +34,14 @@
     <string name="step_up_param">Up Step (%)</string>
     <string name="step_down_param">Up Step (%)</string>
 
+    <string name="four_channel_function_name">Four channel with negative</string>
+    <string name="four_channel_param1">Negative period (%)"</string>
+    <string name="four_channel_param2">"1st channel (%)"</string>
+    <string name="four_channel_param3">"2nd channel (%)"</string>
+    <string name="four_channel_param4">"3rd channel (%)"</string>
+    <string name="four_channel_param5">"4th channel (%)"</string>
+    <string name="four_channel_param6">"Zero level (%)"</string>
+
 
     <string-array name="functionNames">
         <item>Sin</item>

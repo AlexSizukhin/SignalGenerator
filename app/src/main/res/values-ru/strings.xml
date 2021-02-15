@@ -34,6 +34,14 @@
     <string name="step_up_param">Верхняя ступенька (%)</string>
     <string name="step_down_param">Нижняя ступенька (%)</string>
 
+    <string name="four_channel_function_name">4 канала с отрицательным периодом</string>
+    <string name="four_channel_param1">Отрицательный период (%)"</string>
+    <string name="four_channel_param2">"1ый канал (%)"</string>
+    <string name="four_channel_param3">"2ой канал (%)"</string>
+    <string name="four_channel_param4">"3ий канал (%)"</string>
+    <string name="four_channel_param5">"4ый канал (%)"</string>
+    <string name="four_channel_param6">"Уровнь нуля (%)"</string>
+
 
     <string-array name="functionNames">
         <item>Синус</item>
