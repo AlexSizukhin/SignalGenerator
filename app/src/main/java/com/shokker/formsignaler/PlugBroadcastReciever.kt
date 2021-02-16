@@ -40,7 +40,7 @@ class PlugBroadcastReciever: BroadcastReceiver(){
 
     override fun onReceive(context: Context?, intent: Intent?) {
         // AIRPLANE MODE TO TEST BroadcastReciever
-        if (intent?.getAction().equals(Intent.ACTION_AIRPLANE_MODE_CHANGED)) {
+        if (intent?.getAction().equals(Intent.ACTION_AIRPLANE_MODE_CHANGED) && BuildConfig.DEBUG) {
             Log.d(TAG,"AVIA")       // for test
             val state = intent!!.getBooleanExtra("state",false)
                 if(state)
