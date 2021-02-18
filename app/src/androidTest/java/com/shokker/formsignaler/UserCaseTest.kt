@@ -2,7 +2,9 @@ package com.shokker.formsignaler
 
 //import com.google.common.base.Predicates.instanceOf
 
+import android.app.Activity
 import android.content.Context
+import android.content.pm.ActivityInfo
 import android.util.Log
 import android.view.KeyEvent
 import android.widget.EditText
@@ -15,6 +17,8 @@ import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
+import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
 import com.shokker.formsignaler.DIModules.RealGeneratorModule
 import com.shokker.formsignaler.UI.MainActivity
 import com.shokker.formsignaler.model.MainContract
@@ -77,12 +81,40 @@ class UserCaseTest
     fun checkLoadToDialogSettings(){         // only start and stop app
         Espresso.onView(ViewMatchers.withId(R.id.settingsFloatButton)).perform(ViewActions.click())
         //Thread.sleep(3000)
-        Espresso.onView(ViewMatchers.withId(R.id.spinnerSampleRate)).check(ViewAssertions.matches(ViewMatchers.withSpinnerText(fakeSettings.frameRate.toString())))
-        Espresso.onView(ViewMatchers.withId(R.id.editTextBufferSize)).check(ViewAssertions.matches(ViewMatchers.withText(fakeSettings.bufferSize.toString())))
-        Espresso.onView(ViewMatchers.withId(R.id.swStopOnUnplug)).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-        Espresso.onView(ViewMatchers.withId(R.id.swStartOnPlug)).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-        Espresso.onView(ViewMatchers.withId(R.id.swStopOnUnplug)).check(ViewAssertions.matches(ViewMatchers.isChecked()))
-        Espresso.onView(ViewMatchers.withId(R.id.swStartOnPlug)).check(ViewAssertions.matches(ViewMatchers.isChecked()))
+        Espresso.onView(ViewMatchers.withId(R.id.spinnerSampleRate)).check(
+            ViewAssertions.matches(
+                ViewMatchers.withSpinnerText(
+                    fakeSettings.frameRate.toString()
+                )
+            )
+        )
+        Espresso.onView(ViewMatchers.withId(R.id.editTextBufferSize)).check(
+            ViewAssertions.matches(
+                ViewMatchers.withText(
+                    fakeSettings.bufferSize.toString()
+                )
+            )
+        )
+        Espresso.onView(ViewMatchers.withId(R.id.swStopOnUnplug)).check(
+            ViewAssertions.matches(
+                ViewMatchers.isDisplayed()
+            )
+        )
+        Espresso.onView(ViewMatchers.withId(R.id.swStartOnPlug)).check(
+            ViewAssertions.matches(
+                ViewMatchers.isDisplayed()
+            )
+        )
+        Espresso.onView(ViewMatchers.withId(R.id.swStopOnUnplug)).check(
+            ViewAssertions.matches(
+                ViewMatchers.isChecked()
+            )
+        )
+        Espresso.onView(ViewMatchers.withId(R.id.swStartOnPlug)).check(
+            ViewAssertions.matches(
+                ViewMatchers.isChecked()
+            )
+        )
     }
     @Test
     fun checkSavedSettings()
@@ -95,7 +127,11 @@ class UserCaseTest
         Espresso.onView(ViewMatchers.withId(R.id.swStartOnPlug)).perform(ViewActions.click())
         Espresso.onView(ViewMatchers.withId(R.id.swStopOnUnplug)).perform(ViewActions.click())
         Espresso.onView(ViewMatchers.withId(R.id.editTextBufferSize)).perform(ViewActions.clearText())
-                                                                    .perform(ViewActions.typeText(newBuffer.toString()))
+                                                                    .perform(
+                                                                        ViewActions.typeText(
+                                                                            newBuffer.toString()
+                                                                        )
+                                                                    )
                                                                     .perform(ViewActions.closeSoftKeyboard())
 
 //        Espresso.onView(ViewMatchers.withId(R.id.spinnerSampleRate)).perform(ViewActions.click())
@@ -116,19 +152,43 @@ class UserCaseTest
     {
         //onData(allOf(`is`(instanceOf(MainContract.SignalFunction::class.java)))).atPosition(2).perform(ViewActions.click())
         Espresso.onView(ViewMatchers.withId(R.id.functionList)).perform(ViewActions.click())
-        Espresso.onView(ViewMatchers.withText(getResourceString(R.string.sin_function_name))).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-        Espresso.onView(ViewMatchers.withText(getResourceString(R.string.pwm_function_name))).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-        Espresso.onView(ViewMatchers.withText(getResourceString(R.string.noise_function_name))).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-        Espresso.onView(ViewMatchers.withText(getResourceString(R.string.double_pwm_function_name))).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        Espresso.onView(ViewMatchers.withText(getResourceString(R.string.sin_function_name))).check(
+            ViewAssertions.matches(
+                ViewMatchers.isDisplayed()
+            )
+        )
+        Espresso.onView(ViewMatchers.withText(getResourceString(R.string.pwm_function_name))).check(
+            ViewAssertions.matches(
+                ViewMatchers.isDisplayed()
+            )
+        )
+        Espresso.onView(ViewMatchers.withText(getResourceString(R.string.noise_function_name))).check(
+            ViewAssertions.matches(
+                ViewMatchers.isDisplayed()
+            )
+        )
+        Espresso.onView(ViewMatchers.withText(getResourceString(R.string.double_pwm_function_name))).check(
+            ViewAssertions.matches(
+                ViewMatchers.isDisplayed()
+            )
+        )
 //        Espresso.onView(ViewMatchers.withText(getResourceString(R.string.saw_function_name))).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
     }
     @Test
     fun checkFunctionSelect()
     {
         Espresso.onView(ViewMatchers.withId(R.id.functionList)).perform(ViewActions.click())
-        onData(allOf(`is`(instanceOf(MainContract.SignalFunction::class.java)))).atPosition(3).perform(ViewActions.click())
+        onData(allOf(`is`(instanceOf(MainContract.SignalFunction::class.java)))).atPosition(3).perform(
+            ViewActions.click()
+        )
         if(fakeGenerator.generatingFunction?.functionName!=getResourceString(R.string.double_pwm_function_name))
-            throw Exception("Selected function is ${fakeGenerator.generatingFunction?.functionName} while must be ${getResourceString(R.string.double_pwm_function_name)}")
+            throw Exception(
+                "Selected function is ${fakeGenerator.generatingFunction?.functionName} while must be ${
+                    getResourceString(
+                        R.string.double_pwm_function_name
+                    )
+                }"
+            )
 
     }
     @Test
@@ -136,7 +196,13 @@ class UserCaseTest
     {
         Thread.sleep(500)
         if(fakeGenerator.generatingFunction?.functionName!=getResourceString(R.string.sin_function_name))
-            throw Exception("Selected function is ${fakeGenerator.generatingFunction?.functionName} while must be ${getResourceString(R.string.sin_function_name)}")
+            throw Exception(
+                "Selected function is ${fakeGenerator.generatingFunction?.functionName} while must be ${
+                    getResourceString(
+                        R.string.sin_function_name
+                    )
+                }"
+            )
 
     }
     @Test
@@ -188,7 +254,9 @@ class UserCaseTest
         val newParam:Int = Random.nextUInt().rem(90u).toInt()
 
         Espresso.onView(ViewMatchers.withId(R.id.functionList)).perform(ViewActions.click())
-        onData(allOf(`is`(instanceOf(MainContract.SignalFunction::class.java)))).atPosition(2).perform(ViewActions.click())
+        onData(allOf(`is`(instanceOf(MainContract.SignalFunction::class.java)))).atPosition(2).perform(
+            ViewActions.click()
+        )
 
         Espresso.onView(ViewMatchers.withId(R.id.playFloatButton)).perform(ViewActions.click())
 
@@ -213,6 +281,24 @@ class UserCaseTest
 
     }
 
+    @Test
+    fun screenRotate()                      // that f*cken works!!!
+    {
+        Thread.sleep(1000)
+        val currentActivity = getCurrentActivity()
+        currentActivity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+        getInstrumentation().waitForIdleSync()
+        Thread.sleep(1000)
+    }
 
+
+
+    fun getCurrentActivity(): Activity? {
+        var activity: Activity? = null
+        activityRule.scenario.onActivity {
+            activity = it
+        }
+        return activity
+    }
 
 }
