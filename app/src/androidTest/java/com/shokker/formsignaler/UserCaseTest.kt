@@ -16,9 +16,9 @@ import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.ext.junit.rules.ActivityScenarioRule
+import androidx.test.filters.LargeTest
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
-import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
 import com.shokker.formsignaler.DIModules.RealGeneratorModule
 import com.shokker.formsignaler.UI.MainActivity
 import com.shokker.formsignaler.model.MainContract
@@ -37,6 +37,7 @@ import kotlin.random.nextUInt
 @UninstallModules(SettingsModule::class, RealGeneratorModule::class)
 @HiltAndroidTest
 //@RunWith(AndroidJUnit4::class)
+@LargeTest
 class UserCaseTest
 {
     @get:Rule
